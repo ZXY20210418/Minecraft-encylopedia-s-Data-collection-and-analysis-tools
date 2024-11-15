@@ -1,4 +1,4 @@
-from mods import Mods  # 导入自定义的Mods模块
+from by_mod.mods import Mods  # 导入自定义的Mods模块
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -20,7 +20,7 @@ def main():
 
         # 获取模组开始收录的时间戳
         edition_start_time_list = re.findall(r'(.{4})-(.{2})-(.{2})', mod.datetime)[0]
-        edition_start_time = int(edition_start_time_list[0] + edition_start_time_list[1]) * 100 + 0o01
+        edition_start_time = int(edition_start_time_list[0] + edition_start_time_list[1]) * 100 + 1
         edition_start_time_stamp = int(datetime.strptime(str(edition_start_time), '%Y%m%d').timestamp())
 
         try:
@@ -34,8 +34,8 @@ def main():
                 print('起始时间和结束时间必须按格式输入')
 
             # 补全时间格式
-            regular_start_time = str(int(start_time) * 100 + 0o01)
-            regular_end_time = str(int(end_time) * 100 + 0o01)
+            regular_start_time = str(int(start_time) * 100 + 1)
+            regular_end_time = str(int(end_time) * 100 + 1)
 
             # 将时间字符串转换为时间戳
             st_object = int(datetime.strptime(regular_start_time, date_format).timestamp())

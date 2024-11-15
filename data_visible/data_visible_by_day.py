@@ -17,8 +17,10 @@ def main(file_name):
     # 检查数据类型是否为每日编辑记录
     if mod_info['type'] != 'daily':
         print('这不是按日查找的文件，请重新输入文件')
-        exit()  # 如果不是每日记录，则退出程序
-
+        return # 如果不是每日记录，则退出程序
+    is_by_mod = False
+    if 'link' in mod_info:
+        is_by_mod = True
     # 从字典中提取编辑记录
     summary = mod_info['edition']
     # 提取起始和结束日期
@@ -26,11 +28,18 @@ def main(file_name):
     start_date = mod_info['start_time'][4:9]
     end_year = mod_info['end_time'][0:4]
     end_date = mod_info['end_time'][4:9]
-    mod_name = mod_info['name']  # 模组名称
-    mod_link = mod_info['link']  # 模组链接
+
+    mod_name = None
+    mod_link = None
+
+    position = 2
+    if is_by_mod:
+        mod_name = mod_info['name']  # 模组名称
+        mod_link = mod_info['link']  # 模组链接
+        position = 1
 
     # 提取每天的日期
-    timely = [time_info[1].split(' ')[0] for time_info in summary]
+    timely = [time_info[position].split(' ')[0] for time_info in summary]
 
     # 使用Counter统计每天的编辑次数
     listr = Counter(timely)
@@ -44,11 +53,12 @@ def main(file_name):
         frequencies.append(frequency)
 
     # 构建图表标题，包括模组名称和时间范围，并添加链接
-    title = (
-        f'MC百科{start_year}年{start_date[0:2]}月{start_date[2:4]}日至{end_year}年{end_date[0:2]}月{end_date[2:4]}日'
-        f'<a href="{mod_link}" target="_blank">{mod_name}</a>模组编辑情况'
-        '<br><a href="https://www.bilibili.com/video/BV1GJ411x7h7" target="_blank">展开</a>'
-    )
+    title = f'MC百科{start_year}年{start_date[0:2]}月{start_date[2:4]}日至{end_year}年{end_date[0:2]}月{end_date[2:4]}日'
+    if is_by_mod:
+        title += f'<a href="{mod_link}" target="_blank">{mod_name}</a>模组编辑情况'
+    else:
+        title += '编辑情况'
+
     labels = {'x': '时间', 'y': '编辑次数'}  # 图表轴标签
 
     # 使用Plotly创建柱状图
@@ -62,10 +72,11 @@ def main(file_name):
     )
 
     # 构建HTML文件名
-    html_filename = (
-        f'{start_year}年{start_date[0:2]}月{start_date[2:4]}日至{end_year}年{end_date[0:2]}月{end_date[2:4]}日'
-        f'{mod_name}模组编辑数据.html'
-    )
+    html_filename = f'{start_year}年{start_date[0:2]}月{start_date[2:4]}日至{end_year}年{end_date[0:2]}月{end_date[2:4]}日'
+    if is_by_mod:
+        html_filename += f'{mod_name}模组编辑数据.html'
+    else:
+        html_filename += 'MC百科编辑数据.html'
     # 如果 files 文件夹不存在，则创建它
     if not os.path.exists('files'):
         os.makedirs('files')

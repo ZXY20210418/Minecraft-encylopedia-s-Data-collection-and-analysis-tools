@@ -1,4 +1,4 @@
-from mods import Mods  # 导入自定义的Mods模块
+from by_mod.mods import Mods # 导入自定义的Mods模块
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -32,7 +32,7 @@ def main():
             # 验证输入的时间长度是否符合要求
             if len(start_time) != 8 or len(end_time) != 8:
                 print('起始时间和结束时间必须按格式输入')
-                exit()
+                return 'exit'
 
             # 将时间字符串转换为时间戳
             st_object = int(datetime.strptime(start_time, date_format).timestamp())
@@ -41,22 +41,28 @@ def main():
             # 验证时间范围是否合理
             if st_object > et_object:
                 print('结束时间不得大于开始时间')
+                return 'exit'
             elif st_object < edition_start_time_stamp or et_object < edition_start_time_stamp:
                 print(f'{edition_start_time_list[0]}年{edition_start_time_list[1]}月{edition_start_time_list[2]}号MC'
                       f'百科才开始收录模组{mod.name}，你搁这时空穿越呢')
+                return 'exit'
             elif st_object > time_now_stamp or et_object > time_now_stamp:
                 print(f'现在是{time[0]}年{time[1]}月{time[2]}日，你搁这预知未来呢')
+                return 'exit'
             elif et_object - st_object > 2592000:  # 大约30天
                 print('最多支持30天的数据查询')
+                return 'exit'
             else:
                 break
 
         except ValueError:
             # 如果输入的时间格式不正确
             print('请输入正确的时间格式（YYYYMMDD）')
+            return 'exit'
         except Exception as ex:
             # 如果发生其他未知错误
             print(f'未知错误：{ex}')
+            return 'exit'
 
     # 构造请求URL
     response = requests.get(f'{mod.edition_link}?starttime={st_object}&endtime={et_object}', headers=mod.headers)

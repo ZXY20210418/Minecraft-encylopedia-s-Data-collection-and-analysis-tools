@@ -1,7 +1,0 @@
-import data_visable_by_day
-import data_visable_by_editior
-import data_visable_by_mod_name
-import data_visable_by_month
-import get_data_by_day
-import get_data_by_month
-

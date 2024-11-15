@@ -18,9 +18,14 @@ def main(file_name):
     if mod_info['type'] != 'monthly':
         print('这不是按月查找的文件，请重新输入文件')
         exit()  # 如果不是每月记录，则退出程序
-
+    is_by_mod = False
+    if 'link' in mod_info:
+        is_by_mod = True
     # 从字典中提取编辑记录
     summary = mod_info['edition']
+
+    mod_link = None
+    mod_name = None
 
     # 提取起始和结束年月
     start_year = mod_info['start_time'][0:4]
@@ -28,9 +33,10 @@ def main(file_name):
     end_year = mod_info['end_time'][0:4]
     end_month = mod_info['end_time'][4:7]
 
-    # 获取模组名称和链接
-    mod_name = mod_info['name']
-    mod_link = mod_info['link']
+    if is_by_mod:
+        # 获取模组名称和链接
+        mod_name = mod_info['name']
+        mod_link = mod_info['link']
 
     # 从编辑记录中提取时间信息
     timer = [times[0].split('~')[0] for times in summary]
@@ -41,9 +47,11 @@ def main(file_name):
     # 构建图表标题，包括模组名称和时间范围，并添加链接
     title = (
         f'MC百科{start_year}年{start_month}月至{end_year}年{end_month}月'
-        f'<a href="{mod_link}" target="_blank">{mod_name}</a>模组编辑情况'
-        '<br><a href="https://www.bilibili.com/video/BV1GJ411x7h7" target="_blank">展开</a>'
     )
+    if is_by_mod:
+        title += f'<a href="{mod_link}" target="_blank">{mod_name}</a>模组编辑情况'
+    else:
+        title += '编辑情况'
 
     # 设置图表轴标签
     labels = {'x': '时间', 'y': '编辑次数'}

@@ -16,8 +16,11 @@ def main(file_name):
     # 检查数据类型是否为每日编辑记录
     if mod_info['type'] != 'daily':
         print('这不是按日查找的文件，请重新输入文件')
-        exit()  # 如果不是每日记录，则退出程序
+        return  # 如果不是每日记录，则退出程序
 
+    is_by_mod = False
+    if 'link' in mod_info:
+        is_by_mod = True
     # 从字典中提取编辑记录
     summary = mod_info['edition']
     # 提取起始和结束日期
@@ -25,11 +28,20 @@ def main(file_name):
     start_date = mod_info['start_time'][4:9]
     end_year = mod_info['end_time'][0:4]
     end_date = mod_info['end_time'][4:9]
-    mod_name = mod_info['name']  # 模组名称
-    mod_link = mod_info['link']  # 模组链接
+
+    mod_link = None
+    mod_name = None
+    editor_index = 1
+    editor_link_index = 3
+
+    if is_by_mod:
+        mod_name = mod_info['name']  # 模组名称
+        mod_link = mod_info['link']  # 模组链接
+        editor_index = 0
+        editor_link_index = 2
 
     # 提取编辑者信息（姓名和链接）
-    list_editor_info = [(editor_info[0], editor_info[2]) for editor_info in summary]
+    list_editor_info = [(editor_info[editor_index], editor_info[editor_link_index]) for editor_info in summary]
 
     # 使用Counter统计每个编辑者的编辑次数
     counted_editor_info = Counter(list_editor_info).items()
@@ -47,11 +59,13 @@ def main(file_name):
     frequencies = [frequency[1] for frequency in sorted_editor_info]
 
     # 构建图表标题，包括模组名称和时间范围，并添加链接
-    title = (
-        f'MC百科{start_year}年{start_date[0:2]}月{start_date[2:4]}日至{end_year}年{end_date[0:2]}月{end_date[2:4]}日'
-        f'<a href="{mod_link}" target="_blank">{mod_name}</a>模组编辑情况'
-        '<br><a href="https://www.bilibili.com/video/BV1GJ411x7h7" target="_blank">展开</a>'
-    )
+    title = f'MC百科{start_year}年{start_date[0:2]}月{start_date[2:4]}日至{end_year}年{end_date[0:2]}月{end_date[2:4]}日'
+
+    if is_by_mod:
+        title += f'<a href="{mod_link}" target="_blank">{mod_name}</a>模组编辑情况'
+    else:
+        title += '编辑情况'
+
     labels = {'x': '编辑人', 'y': '编辑次数'}  # 图表轴标签
 
     # 使用Plotly创建条形图
